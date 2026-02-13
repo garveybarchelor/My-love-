@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>will you be my valentine, Sheryl? 💌</title>
+  <!-- canvas background + dribbble + twitter credit -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+      background: #ffd9e6;
+    }
+
+    /* CANVAS — romantic particle background */
+    #nCanvasRender {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* main content layer */
+    .valentine-wrapper {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      width: 100%;
+      padding: 1.5rem;
+      pointer-events: none;
+    }
+
+    /* beautiful card — fully responsive */
+    .card {
+      max-width: 560px;
+      width: 100%;
+      background: rgba(255, 255, 250, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 40px;
+      padding: 2rem 2rem 2.2rem;
+      box-shadow: 0 20px 40px rgba(220, 20, 60, 0.15), 0 8px 16px rgba(0,0,0,0.05);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      pointer-events: auto;
+      transition: transform 0.25s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.01);
+    }
+
+    /* HER PHOTO — beautiful Sheryl (realistic portrait) */
+    .photo-frame {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .her-photo {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid white;
+      box-shadow: 0 12px 24px rgba(210, 30, 80, 0.25);
+      background: #ffe2eb;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #9e1e4b;
+      margin-bottom: 0.2rem;
+      text-shadow: 0 2px 6px rgba(255, 220, 240, 0.7);
+      letter-spacing: -0.5px;
+    }
+
+    .greeting {
+      font-size: 1.2rem;
+      color: #b34167;
+      margin-bottom: 1rem;
+      font-weight: 500;
+      background: rgba(255, 245, 240, 0.7);
+      padding: 0.3rem 1.4rem;
+      border-radius: 50px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* POEM AREA — dynamic, shows either proposal or response */
+    .poem-container {
+      width: 100%;
+      min-height: 160px;
+      margin: 0.8rem 0 1.2rem;
+      padding: 1.1rem 1.2rem;
+      background: rgba(255, 240, 245, 0.55);
+      backdrop-filter: blur(8px);
+      border-radius: 32px;
+      border: 1px solid rgba(255, 220, 240, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .poem-text {
+      font-size: 1.05rem;
+      line-height: 1.55;
+      color: #4a2a36;
+      font-weight: 400;
+      font-style: italic;
+      letter-spacing: 0.2px;
+      white-space: pre-line;
+      transition: opacity 0.3s;
+    }
+
+    /* BUTTON GROUP — yes + no side by side */
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin: 0.8rem 0 0.6rem;
+    }
+
+    .valentine-btn, .no-btn {
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      padding: 0.8rem 1.8rem;
+      border-radius: 60px;
+      cursor: pointer;
+      box-shadow: 0 12px 24px -6px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1px solid rgba(255,255,255,0.5);
+      flex: 0 1 auto;
+      min-width: 160px;
+    }
+
+    .valentine-btn {
+      background: linear-gradient(145deg, #ff5e7c, #ff2a5c);
+    }
+
+    .valentine-btn:hover {
+      background: linear-gradient(145deg, #ff4d6d, #e61a4a);
+      transform: scale(1.06);
+      box-shadow: 0 18px 28px -6px #f23b5c;
+    }
+
+    .no-btn {
+      background: linear-gradient(145deg, #7f8c8d, #5d6d7e);
+    }
+
+    .no-btn:hover {
+      background: linear-gradient(145deg, #6e7b7c, #4e5d6b);
+      transform: scale(1.06);
+      box-shadow: 0 18px 28px -6px #4a5a6a;
+    }
+
+    .valentine-btn:active, .no-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* response emoji area — shows ❤️ or 💔 stream */
+    .emoji-reaction {
+      margin-top: 1.2rem;
+      font-size: 2.2rem;
+      min-height: 4rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 60px;
+      width: 100%;
+      letter-spacing: 8px;
+    }
+
+    /* credit links (dribbble + twitter) */
+    .credit-links {
+      position: fixed;
+      bottom: 20px;
+      right: 25px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      z-index: 40;
+      pointer-events: auto;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(8px);
+      padding: 0.5rem 0.9rem;
+      border-radius: 50px;
+      border: 0.5px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .dribbble img {
+      width: 32px;
+      height: 32px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+
+    .twitter svg {
+      width: 32px;
+      height: 32px;
+      fill: #1DA1F2;
+    }
+
+    .dribbble:hover, .twitter:hover {
+      transform: scale(1.12);
+    }
+
+    /* responsive */
+    @media (max-width: 500px) {
+      .card { padding: 1.6rem 1.2rem; }
+      .her-photo { width: 130px; height: 130px; }
+      h2 { font-size: 1.9rem; }
+      .valentine-btn, .no-btn { font-size: 1.3rem; padding: 0.7rem 1rem; min-width: 140px; }
+      .button-group { gap: 0.8rem; }
+      .poem-text { font-size: 0.95rem; }
+    }
+
+    @media (max-height: 650px) {
+      .card { padding: 1.2rem; }
+      .her-photo { width: 110px; height: 110px; }
+    }
+
+    /* heart/break float animation */
+    @keyframes floatEmoji {
+      0% { transform: translateY(0) scale(0.8); opacity: 1; }
+      100% { transform: translateY(-200px) scale(1.8); opacity: 0; }
+    }
+    .floating-emoji {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      animation: floatEmoji 2.5s ease-out forwards;
+      font-size: 2.5rem;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.2));
+    }
+  </style>
+</head>
+<body>
+  <!-- BACKGROUND CANVAS (particle dream) -->
+  <canvas id="nCanvasRender"></canvas>
+
+  <!-- MAIN VALENTINE CARD — Sheryl's photo & proposal with yes/no -->
+  <div class="valentine-wrapper">
+    <div class="card">
+      <!-- Sheryl's beautiful picture — elegant, realistic, valentine vibe -->
+      <div class="photo-frame">
+        <img 
+          class="her-photo" 
+          src="IMG-20260117-WA0125.jpg"
+          alt="Sheryl's beautiful portrait"
+          title="Sheryl, my valentine"
+        >
+      </div>
+      <h2>Sheryl</h2>
+      <span class="greeting">🌹 will you be my valentine?</span>
+
+      <!-- POEM CONTAINER — changes based on answer -->
+      <div class="poem-container">
+        <div id="poemDisplay" class="poem-text">
+          Your 'yes' is a sunrise in my heart,<br>A promise of forever, a brand-new start.<br>Every heartbeat whispers your name,<br>And life with you will never be the same.<br>I vow to hold your hand through storm and sun,<br>For with you, my love, I am truly one.
+        </div>
+      </div>
+
+      <!-- YES & NO BUTTONS — both with emoji reactions and poems -->
+      <div class="button-group">
+        <button id="yesBtn" class="valentine-btn">❤️ YES</button>
+        <button id="noBtn" class="no-btn">💔 no</button>
+      </div>
+
+      <!-- EMOJI REACTION AREA (❤️ or 💔 cascade) -->
+      <div id="emojiReaction" class="emoji-reaction"></div>
+    </div>
+  </div>
+
+  <!-- DRIBBBLE & TWITTER CREDITS (exact markup) -->
+  <div class="credit-links">
+    <a class="dribbble" href="https://dribbble.com/TaminoMartinius" target="_blank">
+      <img src="https://cdn.dribbble.com/assets/dribbble-ball-mark-2bd45f09c2fb58dbbfb44766d5d1d07c5a12972d602ef8b32204d28fa3dda554.svg" alt="dribbble"/>
+    </a>
+    <a class="twitter" target="_top" href="https://twitter.com/TaminoMartinius">
+      <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72">
+        <path d="M67.812 16.141a26.246 26.246 0 0 1-7.519 2.06 13.134 13.134 0 0 0 5.756-7.244 26.127 26.127 0 0 1-8.313 3.176A13.075 13.075 0 0 0 48.182 10c-7.229 0-13.092 5.861-13.092 13.093 0 1.026.118 2.021.338 2.981-10.885-.548-20.528-5.757-26.987-13.679a13.048 13.048 0 0 0-1.771 6.581c0 4.542 2.312 8.551 5.824 10.898a13.048 13.048 0 0 1-5.93-1.638c-.002.055-.002.11-.002.162 0 6.345 4.513 11.638 10.504 12.84a13.177 13.177 0 0 1-3.449.457c-.846 0-1.667-.078-2.465-.231 1.667 5.2 6.499 8.986 12.23 9.09a26.276 26.276 0 0 1-16.26 5.606A26.21 26.21 0 0 1 4 55.976a37.036 37.036 0 0 0 20.067 5.882c24.083 0 37.251-19.949 37.251-37.249 0-.566-.014-1.134-.039-1.694a26.597 26.597 0 0 0 6.533-6.774z"/>
+      </svg>    
+    </a>
+  </div>
+
+  <script>
+    (function() {
+      "use strict";
+
+      // ---------- SHERYL'S VALENTINE: YES/NO with poems & emoji bursts ----------
+      const poemEl = document.getElementById('poemDisplay');
+      const emojiReactionEl = document.getElementById('emojiReaction');
+      const yesBtn = document.getElementById('yesBtn');
+      const noBtn = document.getElementById('noBtn');
+
+      // Sheryl's poems (exact wording)
+      const YES_POEM = `Your 'yes' is a sunrise in my heart,\nA promise of forever, a brand-new start.\nEvery heartbeat whispers your name,\nAnd life with you will never be the same.\nI vow to hold your hand through storm and sun,\nFor with you, my love, I am truly one.`;
+      
+      const NO_POEM = `Though your heart speaks a different tune,\nI’ll treasure the moments, the sun and moon.\nNo regret, no anger, only respect,\nFor love is a gift we cannot force or select.\nMay your path be bright, your dreams take flight,\nAnd know I wish you only joy and light.`;
+
+      // floating emoji burst function (❤️ for yes, 💔 for no)
+      function burstEmoji(emoji, count = 22) {
+        // clear previous reaction area and fill with some static emojis
+        emojiReactionEl.innerHTML = '';
+        for (let i = 0; i < 12; i++) {
+          const span = document.createElement('span');
+          span.innerText = emoji;
+          span.style.fontSize = '2.2rem';
+          span.style.opacity = '0.9';
+          span.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))';
+          emojiReactionEl.appendChild(span);
+        }
+
+        // create flying emoji all over screen
+        for (let i = 0; i < count; i++) {
+          setTimeout(() => {
+            const flyingEmoji = document.createElement('div');
+            flyingEmoji.className = 'floating-emoji';
+            flyingEmoji.innerText = emoji;
+            flyingEmoji.style.left = Math.random() * 100 + '%';
+            flyingEmoji.style.top = (Math.random() * 70 + 20) + '%';
+            flyingEmoji.style.fontSize = (Math.random() * 36 + 24) + 'px';
+            flyingEmoji.style.animationDuration = (Math.random() * 1.8 + 1.2) + 's';
+            document.body.appendChild(flyingEmoji);
+            setTimeout(() => { flyingEmoji.remove(); }, 2500);
+          }, i * 30);
+        }
+      }
+
+      // YES button handler
+      function handleYes() {
+        poemEl.innerText = YES_POEM;
+        burstEmoji('❤️', 28);
+        // also add subtle background happiness
+        emojiReactionEl.style.background = 'rgba(255, 210, 220, 0.6)';
+        emojiReactionEl.style.borderRadius = '50px';
+        emojiReactionEl.style.padding = '0.6rem';
+      }
+
+      // NO button handler
+      function handleNo() {
+        poemEl.innerText = NO_POEM;
+        burstEmoji('💔', 26);
+        emojiReactionEl.style.background = 'rgba(210, 220, 235, 0.5)';
+        emojiReactionEl.style.borderRadius = '50px';
+        emojiReactionEl.style.padding = '0.6rem';
+      }
+
+      // attach listeners
+      yesBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleYes();
+      });
+
+      noBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleNo();
+      });
+
+      // touch support for mobile
+      yesBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handleYes();
+      });
+      noBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handleNo();
+      });
+
+      // ---------- BACKGROUND CANVAS (romantic particles, hearts) ----------
+      const canvas = document.getElementById('nCanvasRender');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let particles = [];
+      const PARTICLE_COUNT = 130;
+
+      const pinkPalette = ['#ffb3c6', '#ffc2d1', '#ffd9da', '#ffe5e6', '#fbafc0', '#f8cad9', '#fcc9d3', '#ffdfeb'];
+
+      function initParticles() {
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            radius: Math.random() * 5 + 2,
+            speedX: (Math.random() - 0.5) * 0.4,
+            speedY: (Math.random() - 0.5) * 0.3 + 0.1,
+            color: pinkPalette[Math.floor(Math.random() * pinkPalette.length)],
+            opacity: Math.random() * 0.5 + 0.3,
+            isHeart: Math.random() > 0.55,
+          });
+        }
+      }
+
+      function drawHeart(x, y, size, color, opacity) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.beginPath();
+        ctx.moveTo(0, -size * 0.8);
+        ctx.bezierCurveTo(-size * 0.6, -size * 1.2, -size * 0.8, 0, 0, size * 0.9);
+        ctx.bezierCurveTo(size * 0.8, 0, size * 0.6, -size * 1.2, 0, -size * 0.8);
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.globalAlpha = opacity * 0.9;
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function drawParticles() {
+        ctx.clearRect(0, 0, width, height);
+        const grad = ctx.createLinearGradient(0, 0, width * 0.7, height);
+        grad.addColorStop(0, '#ffe6f0');
+        grad.addColorStop(0.6, '#ffeaf1');
+        grad.addColorStop(1, '#ffdde6');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, width, height);
+
+        for (let p of particles) {
+          if (p.isHeart && p.radius > 3.2) {
+            drawHeart(p.x, p.y, p.radius * 0.6, p.color, p.opacity);
+          } else {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.opacity;
+            ctx.fill();
+          }
+        }
+        ctx.globalAlpha = 1.0;
+      }
+
+      function updateParticles() {
+        for (let p of particles) {
+          p.x += p.speedX;
+          p.y += p.speedY;
+          if (p.x > width + 30) p.x = -30;
+          if (p.x < -30) p.x = width + 30;
+          if (p.y > height + 30) p.y = -30;
+          if (p.y < -30) p.y = height + 30;
+        }
+      }
+
+      function animate() {
+        updateParticles();
+        drawParticles();
+        requestAnimationFrame(animate);
+      }
+
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        initParticles();
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+      animate();
+
+      // tiny intro – show initial poem: proposal sunrise poem (already in html)
+      // but ensure it's exactly Sheryl's yes-poem as initial proposal? 
+      // according to requirement: "if she says yes or this "Though your heart..." 
+      // The initial poem shown is the beautiful yes-poem (as invitation). It's romantic.
+      // Perfect.
+    })();
+  </script>
+</body>
+</html>
